@@ -33,13 +33,19 @@ public class MetricsTests {
         String cpuName = MetricRegistry.name("CpuStatus", "load");
         registry.register(cpuName, cpuGauge);
 
-        /* Meter- measures how many times per second/minute/5 minutes/15 minutes a particular event occurs */
+        /* Meter- measures how many times per second/minute/5 minutes/15 minutes a particular event occurs,
+         * Be forewarned: the meter count returns a count of all events since the startup of the application.
+         * This count cannot be reset. You will need to use methods like getOneMinuteRate() to return stats
+         * for the last minute.
+         */
         Meter cpuThresholdEvents = registry.meter("CpuStatus.thresholdEvents");
         int threshold = 40;
 
         /* Histogram: given a collection of values, the histogram provides some stats on the collection. Stats include
             minimum value, maximum value, calculation of 95th percentile, etc. The values are sorted as they are calculated,
-            so their arrangement does not provide history.
+            so their arrangement does not provide history. Like the meter, calling histogram.getCount() will return
+            a count of all events since application startup. You will need to use histogram.getSnapshot() to get
+            the most recent stats.
             Also see: http://stackoverflow.com/questions/30987757/dropwizard-metrics-meters-vs-timers
          */
         Histogram histogram = new Histogram(new ExponentiallyDecayingReservoir());
@@ -54,11 +60,13 @@ public class MetricsTests {
 
         Random r= new Random(new Date().getTime());
 
-        for(int i=0; i<600; i++){
+        int oneMinute = 600;
+        int tenMinutes = oneMinute * 10;
+        for(int i=0; i<tenMinutes; i++){
             Timer.Context context = timer.time();
             Thread.currentThread().sleep(100);
             int next = Math.abs(r.nextInt() % 100);
-            System.out.printf("Current CPU status:%d\n", next);
+//            System.out.printf("Current CPU status:%d\n", next);
             cpuGauge.load = next;
             histogram.update(next);
             counter.inc();
@@ -67,6 +75,11 @@ public class MetricsTests {
                 cpuThresholdEvents.mark();
             }
             context.stop();
+
+            if(i % 600 == 0){
+                System.out.printf("*** Minute Mark, histogram has recorded %d total events, with %d events in snapshot ***\n",
+                        timer.getCount(), timer.getSnapshot().size());
+            }
         }
 
 
@@ -80,7 +93,7 @@ public class MetricsTests {
         histogram = histogramMap.get("CpuStatus.histogram");
 
         System.out.println("--- CPU stats ---");
-        System.out.printf("Timer count:%d\n", timer.getCount());
+        System.out.printf("Timer final count:%d\n", timer.getCount());
         System.out.printf("Timer mean rate:%f events per second\n", timer.getMeanRate());
         System.out.printf("Timer one minute rate:%f events per second\n", timer.getOneMinuteRate());
         System.out.printf("Timer snapshot median duration:%f ms\n", (timer.getSnapshot().getMedian()/1000)/1000);
@@ -100,6 +113,38 @@ public class MetricsTests {
 //        for(long value: historicalValues){
 //            System.out.println(Strings.repeat("#", (int) value/10));
 //        }
+
+        /* Typical output:
+*** Minute Mark, histogram has recorded 1 total events, with 1 events in snapshot ***
+*** Minute Mark, histogram has recorded 601 total events, with 601 events in snapshot ***
+*** Minute Mark, histogram has recorded 1201 total events, with 1028 events in snapshot ***
+*** Minute Mark, histogram has recorded 1801 total events, with 1028 events in snapshot ***
+*** Minute Mark, histogram has recorded 2401 total events, with 1028 events in snapshot ***
+*** Minute Mark, histogram has recorded 3001 total events, with 1028 events in snapshot ***
+*** Minute Mark, histogram has recorded 3601 total events, with 1028 events in snapshot ***
+*** Minute Mark, histogram has recorded 4201 total events, with 1028 events in snapshot ***
+*** Minute Mark, histogram has recorded 4801 total events, with 1028 events in snapshot ***
+*** Minute Mark, histogram has recorded 5401 total events, with 1028 events in snapshot ***
+--- CPU stats ---
+Timer final count:6000
+Timer mean rate:9.974950 events per second
+Timer one minute rate:9.982098 events per second
+Timer snapshot median duration:100.063215 ms
+Timer snapshot mean duration:100.064394
+Timer snapshot min duration value:99
+Timer snapshot max duration value:100
+Timer snapshot standard deviation:0.033083
+Timer snapshot 75th percentile duration:100.070680 ms
+Timer snapshot 99th percentile duration:100.103337 ms
+Number of samples as per counter:6000
+CPU current load:48
+Over threshold events since startup:3610
+Over threshold one minute rate: 6.146890 events per second
+Min value:0
+Max value:99
+
+
+         */
     }
 
     private class CpuGauge implements Gauge<Integer> {
