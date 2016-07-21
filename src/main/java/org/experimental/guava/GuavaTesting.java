@@ -72,18 +72,6 @@ public class GuavaTesting {
         System.out.println("Cache result after expiration=" + cacheResult);
     }
 
-    @Test
-    public void publishSubscribeTesting(){
-
-
-
-        EventBus eventBus = new EventBus();
-
-    }
-
-    private class OldEventBus{
-
-    }
 
     
 
