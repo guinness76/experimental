@@ -66,7 +66,6 @@ public class MetricsTests {
             Timer.Context context = timer.time();
             Thread.currentThread().sleep(100);
             int next = Math.abs(r.nextInt() % 100);
-//            System.out.printf("Current CPU status:%d\n", next);
             cpuGauge.load = next;
             histogram.update(next);
             counter.inc();
