@@ -33,6 +33,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Created by mattg on 6/10/14. <br> http://www.javacodegeeks.com/2014/05/java-8-features-tutorial.html
@@ -213,6 +214,10 @@ public class Java8Testing {
         // Lambda example of BiFunction, where the apply() method is hidden behind the lambda.
         // The HashMap.computeIfPresent() method will directly change a value in a map if the key matches.
         peopleInfo.computeIfPresent("first", (key, value) -> value += " is the first");
+
+        // Example of HashMap.computeIfAbsent(), which builds a new object if it is not in the map.
+        String msgForSecond = peopleInfo.computeIfAbsent("second", (key) -> String.format("Message for second person: %s", "hi"));
+        System.out.println("msgForSecond=" + msgForSecond);
     }
 
     /**
@@ -569,8 +574,7 @@ public class Java8Testing {
 
     }
 
-    @Test
-    public void streamTesting() {
+    private List<IWorker> buildWorkers(){
         Developer dev1 = new Developer();
         dev1.setName("Dev 1");
 
@@ -599,7 +603,13 @@ public class Java8Testing {
         workers.add(secretary);
         workers.add(sales1);
         workers.add(sales2);
+        return workers;
+    }
 
+    @Test
+    public void streamTesting() {
+
+        List<IWorker> workers = buildWorkers();
         /*
          * http://www.drdobbs.com/jvm/lambdas-and-streams-in-java-8-libraries/240166818
          * 
@@ -658,6 +668,54 @@ public class Java8Testing {
                         .equals("peon") == true)
                 .forEach(worker -> worker.issuePay());
 
+    }
+
+    @Test
+    public void flatMapTesting(){
+
+        /*
+            Conceptually, flatMap() allows multiple collections to be flattened into a single collection. Note that
+            all the collections must all hold the same type of object.
+         */
+
+        // Simple example.
+        // Stream.of() combines the two lists into a sequential ordered stream.
+        // List::stream() returns a secondary stream for each streamed list. The secondary stream contains the actual integers.
+        // flatMap() combines all secondary streams into a single stream of only integers.
+        // map() performs an operation on each integer.
+        List<Integer> together = Stream.of(Arrays.asList(1, 2), Arrays.asList(3, 4)) // Stream of List<Integer>
+                .flatMap(List::stream)
+                .map(integer -> integer + 1)
+                .collect(Collectors.toList());
+
+        System.out.println("Flat map example:" + together);
+
+        List<IWorker> workers = buildWorkers();
+
+        List<IWorker> secretaryPool = new ArrayList<>(3);
+        Secretary secOne = new Secretary();
+        secOne.setName("Secretary 1");
+        secretaryPool.add(secOne);
+
+        Secretary secTwo = new Secretary();
+        secTwo.setName("Secretary 2");
+        secretaryPool.add(secTwo);
+
+        Secretary secThree = new Secretary();
+        secThree.setName("Secretary 3");
+        secretaryPool.add(secThree);
+
+        // Find all workers whose role it is to answer phones (aka secretaries).
+        // Stream.of() combines the two lists of workers into a sequential ordered stream.
+        // List::stream() returns a secondary stream for each streamed list. The secondary stream contains the actual workers.
+        // flatMap() combines all secondary streams into a single stream of only workers.
+        Set<IWorker> phonePeople = Stream.of(workers, secretaryPool)
+                .flatMap(List::stream)
+                .filter( worker -> Secretary.SECRETARY_DEFAULT_ROLE.equals(worker.role()))
+                .collect(Collectors.toSet());
+
+        System.out.println("Workers who answer phones:");
+        phonePeople.forEach( worker -> System.out.println(worker));
     }
 
 }

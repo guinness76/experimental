@@ -5,7 +5,9 @@ package org.experimental;
  */
 public class Secretary implements IWorker {
 
-    private String role = "Answers phones";
+    public static final String SECRETARY_DEFAULT_ROLE = "Answers phones";
+    private String name = "";
+    private String role = SECRETARY_DEFAULT_ROLE;
 
     public Secretary() {
 
@@ -34,8 +36,19 @@ public class Secretary implements IWorker {
         return role;
     }
 
+    public String getName(){
+        return name;
+    }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
     @Override
     public String toString() {
-        return "Secretary, role=[" + role + "]";
+        return "Secretary{" +
+                "role='" + role + '\'' +
+                ", name='" + name + '\'' +
+                '}';
     }
 }
