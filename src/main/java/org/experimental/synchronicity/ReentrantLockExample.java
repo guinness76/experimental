@@ -16,6 +16,17 @@ import java.util.concurrent.locks.ReentrantLock;
  * lock and fairness mode, the longer waiting thread will always get the lock first.
  * @author matt.gross
  *
+ * From a developerWorks article:
+ * Use [ReentrantLock] when you actually need something it provides that synchronized doesn't, like
+ * timed lock waits, interruptible lock waits, non-block-structured locks, multiple condition variables, or lock
+ * polling. ReentrantLock also has scalability benefits, and you should use it if you actually have a situation that
+ * exhibits high contention, but remember that the vast majority of synchronized blocks hardly ever exhibit any
+ * contention, let alone high contention. I would advise developing with synchronization until synchronization has
+ * proven to be inadequate, rather than simply assuming "the performance will be better" if you use ReentrantLock.
+ * Remember, these are advanced tools for advanced users. (And truly advanced users tend to prefer the simplest tools
+ * they can find until they're convinced the simple tools are inadequate.) As always, make it right first, and then
+ * worry about whether or not you have to make it faster.
+ *
  */
 public class ReentrantLockExample {
 
