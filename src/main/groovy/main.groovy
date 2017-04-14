@@ -6,3 +6,5 @@ import org.experimental.GroovyPlayground
 app = new GroovyPlayground()
 app.writableField = "ABC"   // Note the JavaBean style syntax- no getter or setter required
 app.makeVariables()
+app.branchAndLoop()
+app.closures()
