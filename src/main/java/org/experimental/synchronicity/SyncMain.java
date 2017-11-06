@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class SyncMain {
 
-    public static long TARGET_NUMBER = 100000000l;
+    public static long TARGET_NUMBER = 100000000L;
     public static int READ_THREADS = 5;
     public static int WRITE_THREADS = 5;
     public static int ROUNDS = 1;
