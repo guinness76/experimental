@@ -62,7 +62,7 @@ Hello
     println("theSetting length=" + theSetting?.length)
 
     // Using a default value when the variable is null
-    println("theSetting length=" + (theSetting?.length ?: -1));
+    println("theSetting length=" + (theSetting?.length ?: -1))
 
     println("append function output with default second value: " + append("system"))
     println("append function output with overridden second value: " + append("system", 2))
@@ -166,6 +166,99 @@ Hello
         .groupBy {it < 10}  // Separates remaining values into two groups: one group with a value under 10 and an assigned key, and another group with no assigned key
         .mapKeys {if(it.key) "underTen" else "overTen" } // Specify the keys of the two groups
     println("Even number list using collection processing=" + anotherSeq)
+
+    // Anything that is iterable can be a FOR loop
+    for (num in evens) {
+        println("evens value = $num")
+    }
+
+    for (c in "hello") {
+        println(c)
+    }
+
+    // While loops are unchanged from Java
+    var counter = 0
+    while(counter < 5) {
+        counter++
+    }
+    println("After while loop, counter = $counter")
+
+    // In Java, we would use a ternary operator like this:
+    // String result = (counter == 5) ? "Counter is set" : "Counter is not set";
+    // But in Kotlin, the IF statement has been expanded from a branch decision to an expression that can
+    // actually return a value (handy for one-liners that need to conditionally assign a value)
+    val msg =  if (counter == 5) "Counter is ready" else "Counter is not ready"
+
+    // Illustration of the "when" statement, Kotlin's replacement for if-else-if chains. The "in" keyword makes
+    // this function quite handy.
+    val statusAsInt = 5
+
+    val statusAsStr = when {
+        statusAsInt in 0..2 -> "low"
+        statusAsInt in 3..5 -> "medium"
+        statusAsInt > 5 -> "high"
+        else -> "unknown"
+    }
+
+    println("Status is $statusAsStr")
+
+    // Using "when" for specific values
+    when (statusAsInt) {
+        2,3 -> println("Currently in medium status, the value is lowish medium")
+        4,5 -> println("Currently in medium status, the value is highish medium")
+    }
+
+    // Kotlin enum example
+    var statusAsEnum = when {
+        statusAsInt in 0..2 -> StatusCode.Low
+        statusAsInt in 3..5 -> StatusCode.Medium
+        statusAsInt > 5 -> StatusCode.High
+        else -> StatusCode.Unknown
+    }
+
+    println("StatusCode enum for value $statusAsInt is $statusAsEnum")
+
+    // String coersion example, where different types of values are coerced from their class type
+    fun coerceToString(theStatus : Any) : String {
+        when {
+            theStatus is Int -> {
+                return when {
+                    statusAsInt in 0..2 -> "low"
+                    statusAsInt in 3..5 -> "medium"
+                    statusAsInt > 5 -> "high"
+                    else -> "unknown"
+                }
+            }
+            theStatus is StatusCode -> {
+                return when (theStatus){
+                    StatusCode.Low -> "low"
+                    StatusCode.Medium -> "medium"
+                    StatusCode.High -> "high"
+                    StatusCode.Unknown -> "unknown"
+                }
+            }
+            theStatus is String -> return theStatus
+            else -> return "unknown"
+        }
+    }
+
+    println("Numeric status code=${coerceToString(statusAsInt)}")
+    println("Enum status code=${coerceToString(statusAsEnum)}")
+    println("String status code=${coerceToString(statusAsStr)}")
+
+    /*
+    Extensions are a way to add new functionality to a class.
+    This is similar to C# extension methods.
+    */
+    fun String.remove(c: Char): String {
+        return this.filter {it != c}
+    }
+    println("Hello, world!".remove('l')) // => Heo, word!
+
+}
+
+enum class StatusCode {
+    Unknown, Low, Medium, High
 }
 
 /**
