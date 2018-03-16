@@ -10,7 +10,7 @@
     <name>experimental</name>
 
     <properties>
-        <kotlin.version>1.2.0-release-IJ2017.3-1</kotlin.version>
+        <kotlin.version>1.2.30</kotlin.version>
     </properties>
 
     <dependencies>
@@ -114,6 +114,11 @@
             <artifactId>gson</artifactId>
             <version>2.8.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
 
     </dependencies>
 
@@ -143,6 +148,7 @@
                         <configuration>
                             <sourceDirs>
                                 <source>src/main/java</source>
+                                <source>src/mycompany-src/main/java</source>
                                 <source>src/main/groovy</source>
                                 <source>src/main/kotlin</source>
                             </sourceDirs>
@@ -156,6 +162,9 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <jvmTarget>1.8</jvmTarget>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
