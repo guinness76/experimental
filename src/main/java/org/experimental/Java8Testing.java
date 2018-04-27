@@ -94,18 +94,17 @@ public class Java8Testing {
     @Test
     public void lambdaImplementOneMethod() {
 
-        /* Create a new implementation of an interface without a lambda */
+        /* Create a new implementation of an interface without a lambda. We need to override init() */
         Device d = new Device() {
-
             @Override
-            public boolean setup(Properties deviceProps) {
+            public boolean init(Properties deviceProps) {
                 return deviceProps.containsKey("x");
             }
         };
 
         /* Use a lambda to create the implementation. */
         Device ld = (deviceProps) -> {
-            // Implementation of setup() is here
+            // Override of init() is here
             return deviceProps.containsKey("x");
         };
 
@@ -716,6 +715,10 @@ public class Java8Testing {
 
         System.out.println("Workers who answer phones:");
         phonePeople.forEach( worker -> System.out.println(worker));
+
+        // Another example, where each andCond object contains a List of Properties, and we want to collate all the
+        // Lists into a single List
+        // return andConds.stream().flatMap(cond -> cond.props.stream()).collect(Collectors.toList());
     }
 
 }

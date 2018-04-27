@@ -7,5 +7,15 @@ import java.util.Properties;
  */
 public interface Device {
 
-    public boolean setup(Properties deviceProps);
+    boolean init(Properties deviceProps);
+
+    default boolean setup(Properties deviceProps) {
+        // Note that you can only call internal private interface methods with *default* interface methods
+        printDeviceProps(deviceProps);
+        return false;
+    }
+
+    private void printDeviceProps(Properties deviceProps) {
+        // empty implementation
+    }
 }
