@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
+import java.time.OffsetDateTime;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -469,6 +471,9 @@ public class Java8Testing {
         LocalDateTime dateTime = LocalDate.now()
                 .atTime(11, 45);
         System.out.println("Today at 11:45 AM: " + dateTime.toString());
+		
+		// To classic date, 6 months ago
+		Date classicDate = Date.from(LocalDateTime.now().minusMonths(6).toInstant(OffsetDateTime.now().getOffset()));
 
         /* Local time */
         // LocalDate is a date component only, LocalTime is a time component only, LocalDateTime is both
