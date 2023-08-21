@@ -1,6 +1,10 @@
 package org.experimental.protobuf;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import com.google.protobuf.ByteString;
 import org.experimental.protobuf.ProtobufMsg.GatewayNetworkMsg;
@@ -18,33 +22,78 @@ import org.experimental.protobuf.ProtobufMsg.MessageBody;
 public class ProtobufExample {
 
     /*
-    Run compile-proto.bat to turn protocolheader.proto into a ProtobufMsg Java class.
+    Run compile-proto.sh to turn protocolheader.proto into a ProtobufMsg Java class.
     Also see https://developers.google.com/protocol-buffers/docs/javatutorial
      */
     public static void main(String[] args) throws Exception{
+        boolean fileWrite = true;
+        boolean fileRead = true;
 
+        GatewayNetworkMsg msg = buildMsg();
+        byte[] serialized = writeToBytes(msg);
+        System.out.println("Protobug: message size in bytes=" + serialized.length);
+
+        File outFile = new File("C:\\development\\experimental\\src\\main\\java\\org\\experimental\\protobuf\\temp\\protbuf.dat");
+        if (fileWrite) {
+            writeToFile(msg, outFile);
+        }
+
+        GatewayNetworkMsg deserialized = null;
+        if (fileRead) {
+            deserialized = readFromFile(outFile);
+        } else {
+            deserialized = readFromBytes(serialized);
+        }
+        System.out.println("Reconstructed message: " + deserialized.toString());
+
+        // String newFieldVal = deserialized.getHeader().getNewFieldX();
+        // System.out.println("Protobuf new field value reported as: '" + newFieldVal + "'");
+
+        // todo Next step is to see how this system deals with change, aka field added/removed/change definition
+    }
+
+
+
+    static GatewayNetworkMsg buildMsg() {
         ProtocolHeader header = ProtocolHeader.newBuilder()
-                .setMagic(0x4941)
-                .setVersion(1)
-                .setMessageId(100)
-                .setOpCode(1)
-                .setSenderId("server1")
-                .setSenderURL("http://localhost:8088/main")
-                .setTargetAddress("server2")
-                .build();
+            .setMagic(0x4941)
+            .setVersion(1)
+            .setMessageId(100)
+            .setOpCode(1)
+            .setSenderId("server1")
+            .setSenderURL("http://localhost:8088/main")
+            .setTargetAddress("server2")
+            // .setNewFieldX("BBB")
+            .build();
 
         String bodyStr = "This is a protocol buffer message";
         MessageBody body = MessageBody.newBuilder()
-                .setMsgBody(ByteString.copyFrom(bodyStr.getBytes()))
-                .build();
+            .setMsgBody(ByteString.copyFrom(bodyStr.getBytes()))
+            .build();
 
-        GatewayNetworkMsg msg = GatewayNetworkMsg.newBuilder()
-                .setHeader(header)
-                .setBody(body).build();
+        return GatewayNetworkMsg.newBuilder()
+            .setHeader(header)
+            .setBody(body).build();
+    }
 
-        byte[] serialized = msg.toByteArray();
+    static byte[] writeToBytes(GatewayNetworkMsg theMsg) {
+        return theMsg.toByteArray();
+    }
 
-        GatewayNetworkMsg deserialized = GatewayNetworkMsg.parseFrom(serialized);
-        System.out.println("Reconstructed message: " + deserialized.toString());
+    static GatewayNetworkMsg readFromBytes(byte[] bytes) throws IOException  {
+        return GatewayNetworkMsg.parseFrom(bytes);
+    }
+
+    static void writeToFile(GatewayNetworkMsg theMsg, File theFile) throws Exception {
+        FileOutputStream fos = new FileOutputStream(theFile);
+        fos.write(theMsg.toByteArray());
+        fos.flush();
+        fos.close();
+    }
+
+    static GatewayNetworkMsg readFromFile(File theFile) throws Exception {
+        FileInputStream fis = new FileInputStream(theFile);
+        byte[] fileBytes = fis.readAllBytes();
+        return readFromBytes(fileBytes);
     }
 }

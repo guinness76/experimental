@@ -1,0 +1,31 @@
+{"namespace": "org.experimental.avro",
+  "type": "record",
+  "name": "GatewayNetworkMsg",
+  "fields": [
+    {
+      "name": "header", "type" : {
+        "name": "ProtocolHeader",
+        "type": "record",
+        "fields": [
+          {"name": "magic", "type": "int"},
+          {"name": "version",  "type": "int"},
+          {"name": "messageId",  "type": "int"},
+          {"name": "opCode",  "type": "int"},
+          {"name": "subCode",  "type": ["int", "null"]},
+          {"name": "flags",  "type": ["int", "null"]},
+          {"name": "senderId",  "type": ["string", "null"]},
+          {"name": "senderURL",  "type": ["string", "null"]},
+          {"name": "targetAddress",  "type": ["string", "null"]}
+        ]
+      }
+    },
+    {"name": "body", "type" :  {
+      "name": "MessageBody",
+      "type": "record",
+      "fields": [
+        {"name": "msgBody", "type": ["string", "null"]}
+      ]
+      }
+    }
+  ]
+}

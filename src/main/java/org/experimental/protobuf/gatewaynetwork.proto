@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+// This is the package where the Java class below is written to.
+package org.experimental.protobuf;
+
+// This is the Java class that is generated from the .proto file when executing `protoc`
+option java_outer_classname = "ProtobufMsg";
+
+/* You can add comments anywhere! */
+message ProtocolHeader {
+    // Field indexes in the reserved list can't be used again. Use 'reserved' to mark fields that have been removed. Reusing a
+    // previously used field causes a lot of problems.
+    reserved 10;
+    int32 magic = 1;
+    int32 version = 2;
+    int32 messageId = 3;
+    int32 opCode = 4;
+    int32 subCode = 5;
+    int32 flags = 6;
+    string senderId = 7;
+    string senderURL = 8;
+    string targetAddress = 9;
+}
+
+message MessageBody {
+    bytes msgBody = 1;
+}
+
+message GatewayNetworkMsg {
+    ProtocolHeader header = 1;
+    MessageBody body = 2;
+}
