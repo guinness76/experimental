@@ -7,26 +7,23 @@ package org.experimental.protobuf;
 option java_outer_classname = "ProtobufMsg";
 
 /* You can add comments anywhere! */
-message ProtocolHeader {
+message ServerMessageHeaderProto {
     // Field indexes in the reserved list can't be used again. Use 'reserved' to mark fields that have been removed. Reusing a
     // previously used field causes a lot of problems.
     reserved 10;
-    int32 magic = 1;
-    int32 version = 2;
-    int32 messageId = 3;
-    int32 opCode = 4;
-    int32 subCode = 5;
-    int32 flags = 6;
-    string senderId = 7;
-    string senderURL = 8;
-    string targetAddress = 9;
+    string intentName = 1;
+    string codecName = 2;
+    map<string, string> headersValues = 3;
+    int32 intentVersion = 4;
 }
 
-message MessageBody {
-    bytes msgBody = 1;
+// todo Need to figure out how to make this function for everything covered by JavaSerializationCodec.
+message ServerMessageBodyProto {
+    string msgBody = 1;
 }
 
-message GatewayNetworkMsg {
-    ProtocolHeader header = 1;
-    MessageBody body = 2;
+// This is the proto version of a ServerMessage
+message ServerMessageProto {
+    ServerMessageHeaderProto header = 1;
+    bytes body = 2;
 }
