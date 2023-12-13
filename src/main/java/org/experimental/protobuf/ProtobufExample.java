@@ -26,7 +26,7 @@ import org.experimental.protobuf.generated.ServerMsgProtocols.ServerMessageProto
 public class ProtobufExample {
 
     /*
-    Run compile-proto.sh to turn protocolheader.proto into a ProtobufMsg Java class.
+    Run compile-proto.sh to turn protocolheader.proto into a generated/ServerMsgProtocols Java class.
     Also see https://developers.google.com/protocol-buffers/docs/javatutorial
      */
     public static void main(String[] args) throws Exception {

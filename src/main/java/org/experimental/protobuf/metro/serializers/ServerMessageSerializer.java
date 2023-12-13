@@ -8,13 +8,25 @@ import org.experimental.protobuf.generated.ServerMsgProtocols.ServerMessageProto
 import org.experimental.protobuf.generated.ServerMsgProtocols.ServerMessageHeaderProto;
 
 public class ServerMessageSerializer implements ProtobufSerializable<ServerMessage> {
+
+    public ServerMessageProto getAsProtoMsg(ServerMessage sm) {
+        return buildMessage(sm);
+    }
+
     @Override
     public byte[] serialize(ServerMessage sm) {
         return buildMessage(sm).toByteArray();
     }
 
-    public ServerMessageProto getAsProtoMsg(ServerMessage sm) {
-        return buildMessage(sm);
+    @Override
+    public ServerMessage deserialize(byte[] bytes) throws InvalidProtocolBufferException {
+        ServerMessageProto smProto = ServerMessageProto.parseFrom(bytes);
+        ServerMessageHeaderProto headerProto = smProto.getHeader();
+        byte[] bodyBytes = smProto.getBody().toByteArray();
+        String intent = String.format("%s|%d", headerProto.getIntentName(), headerProto.getIntentVersion());
+
+        // todo separate out the header intent version from the name
+        return ServerMessage.createFor(intent, headerProto.getCodecName(), bodyBytes);
     }
 
     private ServerMessageProto buildMessage(ServerMessage sm) {
@@ -33,14 +45,4 @@ public class ServerMessageSerializer implements ProtobufSerializable<ServerMessa
         return smProto;
     }
 
-    @Override
-    public ServerMessage deserialize(byte[] bytes) throws InvalidProtocolBufferException {
-        ServerMessageProto smProto = ServerMessageProto.parseFrom(bytes);
-        ServerMessageHeaderProto headerProto = smProto.getHeader();
-        byte[] bodyBytes = smProto.getBody().toByteArray();
-        String intent = String.format("%s|%d", headerProto.getIntentName(), headerProto.getIntentVersion());
-
-        // todo separate out the header intent version from the name
-        return ServerMessage.createFor(intent, headerProto.getCodecName(), bodyBytes);
-    }
 }

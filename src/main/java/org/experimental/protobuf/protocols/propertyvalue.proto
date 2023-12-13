@@ -6,14 +6,27 @@ package org.experimental.protobuf.generated;
 // This is the Java class that is generated from the .proto file when executing `protoc`
 option java_outer_classname = "PropertyValProtocols";
 
-import "google/protobuf/any.proto";
-
+// Access oneof values like so:
+// thePropertyValueProto.setStringValue()
+// thePropertyValueProto.getStringValue()
+// thePropertyValueProto.setBoolValue()
+// thePropertyValueProto.getBoolValue()
 message PropertyValueProto {
   PropertyProto property = 1;
-  google.protobuf.Any value = 2;  // In theory, this should allow a value as byte[]
+  oneof value {
+    bool bool_value = 2;
+    sint32 int_value = 3;
+    sint64 long_value = 4;
+    float float_value = 5;
+    double double_value = 6;
+    string string_value = 7;
+  }
 }
 
 message PropertyProto {
   string name = 1;
-  string type = 2;  // The Property type which is a Java class
+
+  // This could be anything, it just needs to be able to identify which oneof value to access.
+  // Right now it is a full Java class name.
+  string type = 2;
 }
