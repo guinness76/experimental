@@ -7,14 +7,13 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.util.JsonFormat;
 import experimental.protobuf.ProtobufSerializable;
 import experimental.protobuf.SerializerFactory;
 import experimental.protobuf.metro.ServerMessage;
 import experimental.protobuf.metro.serializers.ServerMessageSerializer;
 import experimental.protobuf.metro.serializers.StringSerializer;
-import org.experimental.protobuf.ProtobufMsg.ServerMessageBodyProto;
-import org.experimental.protobuf.ProtobufMsg.ServerMessageHeaderProto;
-import org.experimental.protobuf.ProtobufMsg.ServerMessageProto;
+import org.experimental.protobuf.generated.ServerMsgProtocols.ServerMessageProto;
 
 /**
  * Created by mattgross on 3/31/2017. Protocol buffer classes offer the following advantages:
@@ -55,6 +54,9 @@ public class ProtobufExample {
         } else {
             deserializedMsg = serializer.deserialize(serialized);
         }
+
+        ServerMessageSerializer sms = (ServerMessageSerializer) serializer;
+        System.out.println("ServerMessageProto output:" + JsonFormat.printer().print(sms.getAsProtoMsg(sm)));
 
         // Now the body needs to be reconstructed. In the real world, the codec specified in the ServerMessageHeader
         // is used to deserialize the body contents.

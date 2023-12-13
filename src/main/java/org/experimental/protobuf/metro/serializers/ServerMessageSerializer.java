@@ -4,12 +4,20 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import experimental.protobuf.ProtobufSerializable;
 import experimental.protobuf.metro.ServerMessage;
-import org.experimental.protobuf.ProtobufMsg.ServerMessageHeaderProto;
-import org.experimental.protobuf.ProtobufMsg.ServerMessageProto;
+import org.experimental.protobuf.generated.ServerMsgProtocols.ServerMessageProto;
+import org.experimental.protobuf.generated.ServerMsgProtocols.ServerMessageHeaderProto;
 
 public class ServerMessageSerializer implements ProtobufSerializable<ServerMessage> {
     @Override
     public byte[] serialize(ServerMessage sm) {
+        return buildMessage(sm).toByteArray();
+    }
+
+    public ServerMessageProto getAsProtoMsg(ServerMessage sm) {
+        return buildMessage(sm);
+    }
+
+    private ServerMessageProto buildMessage(ServerMessage sm) {
         ServerMessageHeaderProto header = ServerMessageHeaderProto.newBuilder()
             .setIntentName(sm.getIntentName())
             .setIntentVersion(sm.getIntentVersion())
@@ -22,7 +30,7 @@ public class ServerMessageSerializer implements ProtobufSerializable<ServerMessa
             .setBody(ByteString.copyFrom(sm.getSourceStream()))
             .build();
 
-        return smProto.toByteArray();
+        return smProto;
     }
 
     @Override

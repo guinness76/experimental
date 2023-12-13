@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+// This is the package where the Java class below is written to.
+package org.experimental.protobuf.generated;
+
+// This is the Java class that is generated from the .proto file when executing `protoc`
+option java_outer_classname = "PropertyValProtocols";
+
+import "google/protobuf/any.proto";
+
+message PropertyValueProto {
+  PropertyProto property = 1;
+  google.protobuf.Any value = 2;  // In theory, this should allow a value as byte[]
+}
+
+message PropertyProto {
+  string name = 1;
+  string type = 2;  // The Property type which is a Java class
+}
