@@ -1,10 +1,13 @@
-package experimental.protobuf.metro;
+package org.experimental.protobuf.metro;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.protobuf.Any;
+import com.google.protobuf.Message;
 
 public class ServerMessage {
     public static final String HEADER_VERSION = "_ver_";
@@ -20,14 +23,25 @@ public class ServerMessage {
 
     private ServerMessageHeader header;
     private byte[] sourceStream;    // this is a stand-in for the InputStreamProvider in the real ServerMessageHeader
+    private Object source;  // New for this example. The object that will be serialized or deserialized later.
 
     public ServerMessage(ServerMessageHeader header, byte[] sourceStream) {
         this.header = header;
         this.sourceStream = sourceStream;
     }
 
+    public ServerMessage(ServerMessageHeader header, Object source) {
+        this.header = header;
+        this.source = source;
+    }
+
     public static ServerMessage createFor(String intentName, String codecName, byte[] msgBytes) {
         return new ServerMessage(new ServerMessageHeader(intentName, codecName), msgBytes);
+    }
+
+    // New for this example
+    public static ServerMessage createFor(ServerMessageHeader header, Object source) {
+        return new ServerMessage(header, source);
     }
 
     public void addHeaderValue(String key, String value) {
@@ -40,6 +54,11 @@ public class ServerMessage {
 
     public byte[] getSourceStream() {
         return this.sourceStream;
+    }
+
+    // New for this example
+    public Object getSource() {
+        return this.source;
     }
 
     public String getIntentName() {
@@ -58,11 +77,11 @@ public class ServerMessage {
     public String toString() {
         return "ServerMessage{" +
             "header=" + header +
-            ", body bytes size=" + sourceStream.length +
+            ", body bytes size=" + (sourceStream != null ? sourceStream.length : 0)+
             '}';
     }
 
-    protected static class ServerMessageHeader implements Serializable {
+    public static class ServerMessageHeader implements Serializable {
         private static final Set<Class<?>> WHITELIST =
             Set.of(ServerMessageHeader.class, String.class, Map.class, HashMap.class, Integer.class, Long.class);
         private String intentName;
@@ -92,6 +111,10 @@ public class ServerMessage {
         public void setIntentName(String intentName) {
             this.intentName = getBaseName(intentName);
             this.intentVersion = getVersion(intentName);
+        }
+
+        public void addHeaderValue(String key, String value) {
+            headersValues.put(key, value);
         }
 
         public Map<String, String> getHeadersValues() {

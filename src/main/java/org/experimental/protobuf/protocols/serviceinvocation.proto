@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+// This is the package where the Java class below is written to.
+package org.experimental.protobuf.generated;
+
+// This is the Java class that is generated from the .proto file when executing `protoc`
+option java_outer_classname = "ServiceInvocationProto";
+
+import "google/protobuf/any.proto";
+
+message ServiceInvocationPB {
+  string serviceId = 1;
+  int32 version = 2;
+  string methodName = 3;
+  repeated string argClasses = 4;
+  repeated google.protobuf.Any args = 5;
+  repeated bytes javaSerializedArgs = 6;
+  bool usingJavaSerialization = 7;
+}

@@ -1,4 +1,4 @@
-package experimental.protobuf;
+package org.experimental.protobuf;
 
 import java.io.Serializable;
 import javax.annotation.Nullable;

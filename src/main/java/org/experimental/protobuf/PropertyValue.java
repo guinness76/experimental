@@ -1,4 +1,4 @@
-package experimental.protobuf;
+package org.experimental.protobuf;
 
 import javax.annotation.Nullable;
 

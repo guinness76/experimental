@@ -1,4 +1,4 @@
-package experimental.protobuf;
+package org.experimental.protobuf;
 
 public class BasicProperty<T> implements Property<T> {
     private String name;

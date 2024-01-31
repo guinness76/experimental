@@ -6,6 +6,8 @@ package org.experimental.protobuf.generated;
 // This is the Java class that is generated from the .proto file when executing `protoc`
 option java_outer_classname = "ServerMsgProtocols";
 
+import "google/protobuf/any.proto";
+
 /* You can add comments anywhere! */
 message ServerMessageHeaderProto {
     // Field indexes in the reserved list can't be used again. Use 'reserved' to mark fields that have been removed. Reusing a
@@ -17,13 +19,11 @@ message ServerMessageHeaderProto {
     int32 intentVersion = 4;
 }
 
-// todo Need to figure out how to make this function for everything covered by JavaSerializationCodec.
-message ServerMessageBodyProto {
-    string msgBody = 1;
-}
-
 // This is the proto version of a ServerMessage
-message ServerMessageProto {
+message ServerMessagePB {
     ServerMessageHeaderProto header = 1;
-    bytes body = 2;
+    string bodyProtobufClass = 2;
+    google.protobuf.Any body = 3;
+    bytes javaSerializedBody = 4;
+    bool usingJavaSerialization = 5;
 }
